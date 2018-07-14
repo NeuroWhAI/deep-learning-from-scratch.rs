@@ -5,3 +5,4 @@ authors = ["neurowhai"]
 
 [dependencies]
 rulinalg = "0.4.2"
+mnist = "0.4.0"
