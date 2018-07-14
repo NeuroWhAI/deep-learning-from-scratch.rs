@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate rulinalg;
 
-mod ch02;
+mod ch03;
 
 fn main() {
-	ch02::tests();
+	ch03::tests();
 }
