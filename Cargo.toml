@@ -1,0 +1,7 @@
+[package]
+name = "deep_learning_from_scratch"
+version = "0.1.0"
+authors = ["neurowhai"]
+
+[dependencies]
+rulinalg = "0.4.2"
