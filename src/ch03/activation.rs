@@ -1,4 +1,4 @@
-use rulinalg::matrix::{BaseMatrix, Matrix, BaseMatrixMut};
+use rulinalg::matrix::{Matrix, BaseMatrixMut};
 
 pub fn step_function(x: Matrix<f32>) -> Matrix<f32> {
 	x.apply(&|value| if value > 0.0 { 1.0 } else { 0.0 })

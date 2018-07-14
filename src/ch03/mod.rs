@@ -1,18 +1,23 @@
 mod activation;
 
+use rulinalg::matrix::{Matrix, BaseMatrix};
+use common::plot;
+
+fn test_function(f: fn(Matrix<f32>) -> Matrix<f32>) {
+	let data: Vec<_> = (-50..50).map(|n| n as f32 / 10.0).collect();
+	let out = f(Matrix::new(1, 100, data));
+	
+	let graph_data: Vec<_> = out.iter().map(|v| *v).collect();
+	plot::print_graph(&graph_data[..], 50, 20);
+}
+
 pub fn tests() {
 	println!("Step function");
-	for x in -2..3 {
-		println!("{} -> {}", x, activation::step_function(matrix![x as f32]));
-	}
+	test_function(activation::step_function);
 	
 	println!("Sigmoid");
-	for x in -2..3 {
-		println!("{} -> {}", x, activation::sigmoid(matrix![x as f32]));
-	}
+	test_function(activation::sigmoid);
 	
 	println!("ReLU");
-	for x in -2..3 {
-		println!("{} -> {}", x, activation::relu(matrix![x as f32]));
-	}
+	test_function(activation::relu);
 }

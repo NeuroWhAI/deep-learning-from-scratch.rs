@@ -1,7 +1,6 @@
-#[macro_use]
-extern crate rulinalg;
+extern crate deep_learning_from_scratch;
 
-mod ch03;
+use deep_learning_from_scratch::*;
 
 fn main() {
 	ch03::tests();
