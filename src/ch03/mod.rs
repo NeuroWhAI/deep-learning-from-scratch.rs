@@ -1,4 +1,4 @@
-mod activation;
+pub mod activation;
 
 use rulinalg::matrix::{Matrix, BaseMatrix};
 use common::plot;
