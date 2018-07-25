@@ -64,6 +64,7 @@ impl TwoLayerNet {
         correct as f32 / t.rows() as f32
     }
     
+    #[allow(dead_code)]
     pub fn numerical_gradient(&mut self, x: &Matrix<f32>, t: &Matrix<f32>)
         -> (Matrix<f32>, Matrix<f32>, Matrix<f32>, Matrix<f32>) {
         

@@ -1,5 +1,5 @@
 use mnist::MnistBuilder;
-use rulinalg::matrix::Matrix;
+use rulinalg::matrix::{Matrix, BaseMatrix};
 
 pub struct Mnist {
     pub train_x: Matrix<f32>,
@@ -38,5 +38,28 @@ impl Mnist {
             test_x: convert(&mnist.tst_img, test_size as usize, 784) / 255.0,
             test_y: convert(&mnist.tst_lbl, test_size as usize, 10),
         }
+    }
+    
+    fn get_batch(x: &Matrix<f32>, y: &Matrix<f32>, offset: usize, batch_size: usize)
+        -> (Matrix<f32>, Matrix<f32>) {
+        
+        let batch_range = (offset..(offset + batch_size).min(y.rows()))
+                .collect::<Vec<_>>();
+        let batch_x = x.select_rows(&batch_range[..]);
+        let batch_y = y.select_rows(&batch_range[..]);
+        
+        (batch_x, batch_y)
+    }
+    
+    pub fn get_train_batch(&self, offset: usize, batch_size: usize) -> (Matrix<f32>, Matrix<f32>) {
+        Mnist::get_batch(&self.train_x, &self.train_y, offset, batch_size)
+    }
+    
+    pub fn get_validation_batch(&self, offset: usize, batch_size: usize) -> (Matrix<f32>, Matrix<f32>) {
+        Mnist::get_batch(&self.validation_x, &self.validation_y, offset, batch_size)
+    }
+    
+    pub fn get_test_batch(&self, offset: usize, batch_size: usize) -> (Matrix<f32>, Matrix<f32>) {
+        Mnist::get_batch(&self.test_x, &self.test_y, offset, batch_size)
     }
 }

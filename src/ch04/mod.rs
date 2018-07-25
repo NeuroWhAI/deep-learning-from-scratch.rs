@@ -1,5 +1,5 @@
 mod gradient;
-mod loss;
+pub mod loss;
 mod two_layer_net;
 
 use rulinalg::matrix::{Matrix, BaseMatrix};
