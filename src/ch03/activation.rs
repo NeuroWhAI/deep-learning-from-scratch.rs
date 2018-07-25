@@ -14,16 +14,16 @@ pub fn relu(x: Matrix<f32>) -> Matrix<f32> {
 
 pub fn softmax(mut x: Matrix<f32>) -> Matrix<f32> {
     
-    for mut col in x.col_iter_mut() {
-        let max = col.max(Axes::Col)[0];
+    for mut row in x.row_iter_mut() {
+        let max = row.max(Axes::Row)[0];
         
         let mut sum_exp = 0.0;
-        for val in col.iter_mut() {
+        for val in row.iter_mut() {
             *val = (*val - max).exp();
             sum_exp += *val;
         }
         
-        for val in col.iter_mut() {
+        for val in row.iter_mut() {
             *val /= sum_exp
         }
     }
