@@ -2,9 +2,10 @@ mod layer_naive;
 mod layers;
 mod multi_layer_net;
 
-use rulinalg::matrix::{Matrix, BaseMatrix};
+use rulinalg::matrix::BaseMatrix;
 use common::mnist::Mnist;
 use self::multi_layer_net::MultiLayerNet;
+use ch06::optimizer;
 
 fn test_layer_naive() {
     use self::layer_naive::{MulLayer, AddLayer};
@@ -46,14 +47,13 @@ fn test_layer_naive() {
     println!("dTax: {}", d_tax);
 }
 
-pub fn test_layered_net() {
+pub fn test_layered_net(opti: &mut optimizer::Optimizer) {
     let mnist = Mnist::new();
     let mut net = MultiLayerNet::new(784, 100, 10);
     
     let iters_num = 20;
     let train_size = mnist.train_x.rows();
     let batch_size = 100;
-    let learning_rate = 0.1;
     
     for _ in 0..iters_num {
         let mut batch_offset = 0;
@@ -63,7 +63,7 @@ pub fn test_layered_net() {
         while batch_offset < train_size {
             let (batch_x, batch_y) = mnist.get_train_batch(batch_offset, batch_size);
             
-            loss += net.learn(&batch_x, &batch_y, learning_rate);
+            loss += net.learn(&batch_x, &batch_y, opti);
             
             batch_offset += batch_size;
         }
@@ -88,5 +88,5 @@ pub fn tests() {
     test_layer_naive();
     
     println!("[Layered Network]");
-    test_layered_net();
+    test_layered_net(&mut optimizer::SGD::new(0.01));
 }

@@ -1,5 +1,6 @@
 use rulinalg::matrix::{Matrix, BaseMatrix};
 use common::utils;
+use ch06::optimizer::Optimizer;
 use super::layers::{self, Layer};
 
 
@@ -62,7 +63,7 @@ impl MultiLayerNet {
         cnt as f32 / t.rows() as f32
     }
     
-    pub fn learn(&mut self, x: &Matrix<f32>, t: &Matrix<f32>, lr: f32) -> f32 {
+    pub fn learn(&mut self, x: &Matrix<f32>, t: &Matrix<f32>, optimizer: &mut Optimizer) -> f32 {
         // Forward
         let loss_val = self.loss(x, t);
     
@@ -81,8 +82,8 @@ impl MultiLayerNet {
         
         
         // Learn
-        self.affine1.learn(lr);
-        self.affine2.learn(lr);
+        self.affine1.learn(optimizer);
+        self.affine2.learn(optimizer);
         
         
         loss_val

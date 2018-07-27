@@ -5,6 +5,7 @@ use common::matrix_utils::PartialMatrix;
 use common::utils;
 use ch03::activation;
 use ch04::loss;
+use ch06::optimizer::Optimizer;
 
 
 pub trait Layer {
@@ -85,9 +86,9 @@ impl Affine {
         }
     }
     
-    pub fn learn(&mut self, lr: f32) {
-        self.w -= &self.dw * lr;
-        self.b -= &self.db * lr;
+    pub fn learn(&mut self, optimizer: &mut Optimizer) {
+        optimizer.update(&mut self.w, &self.dw);
+        optimizer.update(&mut self.b, &self.db);
     }
 }
 
