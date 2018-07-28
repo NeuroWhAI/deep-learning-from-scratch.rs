@@ -47,9 +47,9 @@ fn test_layer_naive() {
     println!("dTax: {}", d_tax);
 }
 
-pub fn test_layered_net(opti: &mut optimizer::Optimizer) {
+pub fn test_layered_net(opti: &mut optimizer::Optimizer, w_initializer: &str) {
     let mnist = Mnist::new();
-    let mut net = MultiLayerNet::new(784, 100, 10);
+    let mut net = MultiLayerNet::new(784, 100, 10, w_initializer);
     
     let iters_num = 20;
     let train_size = mnist.train_x.rows();
@@ -88,5 +88,5 @@ pub fn tests() {
     test_layer_naive();
     
     println!("[Layered Network]");
-    test_layered_net(&mut optimizer::SGD::new(0.01));
+    test_layered_net(&mut optimizer::SGD::new(0.01), "random");
 }

@@ -12,12 +12,21 @@ pub struct MultiLayerNet {
     last: layers::SoftmaxWithLoss,
 }
 
+fn get_w_std(w_initializer: &str, input_size: usize) -> f32 {
+    match w_initializer {
+        "rand" | "random" => 0.01,
+        "xavier" => (1.0 / input_size as f32).sqrt(),
+        "he" => (2.0 / input_size as f32).sqrt(),
+        _ => 0.01
+    }
+}
+
 impl MultiLayerNet {
-    pub fn new(input_size: usize, hidden_size: usize, output_size: usize) -> Self {
+    pub fn new(input_size: usize, hidden_size: usize, output_size: usize, w_initializer: &str) -> Self {
         MultiLayerNet {
-            affine1: layers::Affine::new(input_size, hidden_size, 0.01),
+            affine1: layers::Affine::new(input_size, hidden_size, get_w_std(w_initializer, input_size)),
             relu1: layers::Relu::new(),
-            affine2: layers::Affine::new(hidden_size, output_size, 0.01),
+            affine2: layers::Affine::new(hidden_size, output_size, get_w_std(w_initializer, hidden_size)),
             
             last: layers::SoftmaxWithLoss::new(),
         }
