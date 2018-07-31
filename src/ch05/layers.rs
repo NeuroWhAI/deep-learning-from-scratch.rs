@@ -142,3 +142,48 @@ impl Layer for SoftmaxWithLoss {
     }
 }
 
+
+pub struct Dropout {
+    dropout_ratio: f32,
+    mask: PartialMatrix,
+    train_flag: bool,
+}
+
+impl Dropout {
+    pub fn new(dropout_ratio: f32) -> Self {
+        Dropout {
+            dropout_ratio: dropout_ratio,
+            mask: Default::default(),
+            train_flag: false,
+        }
+    }
+    
+    pub fn set_train_flag(&mut self, flag: bool) {
+        self.train_flag = flag;
+    }
+}
+
+impl Layer for Dropout {
+    fn forward(&mut self, x: &Matrix<f32>) -> Matrix<f32> {
+        if self.train_flag {
+            let rand_matrix = Matrix::from_fn(x.rows(), x.cols(), |_, _| rand::random::<f32>());
+            self.mask = PartialMatrix::le(&rand_matrix, self.dropout_ratio);
+            
+            let mut out = utils::copy_matrix(x);
+            self.mask.set(&mut out, 0.0);
+            
+            out
+        }
+        else {
+            x * (1.0 - self.dropout_ratio)
+        }
+    }
+    
+    fn backward(&mut self, dout: &Matrix<f32>) -> Matrix<f32> {
+        let mut masked_dout = utils::copy_matrix(dout);
+        self.mask.set(&mut masked_dout, 0.0);
+        
+        masked_dout
+    }
+}
+

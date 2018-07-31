@@ -7,6 +7,7 @@ use super::layers::{self, Layer};
 pub struct MultiLayerNet {
     affine1: layers::Affine,
     relu1: layers::Relu,
+    dropout1: layers::Dropout,
     affine2: layers::Affine,
     
     last: layers::SoftmaxWithLoss,
@@ -22,18 +23,23 @@ fn get_w_std(w_initializer: &str, input_size: usize) -> f32 {
 }
 
 impl MultiLayerNet {
-    pub fn new(input_size: usize, hidden_size: usize, output_size: usize, w_initializer: &str) -> Self {
+    pub fn new(input_size: usize, hidden_size: usize, output_size: usize, w_initializer: &str,
+        use_dropout: bool) -> Self {
+        
         MultiLayerNet {
             affine1: layers::Affine::new(input_size, hidden_size, get_w_std(w_initializer, input_size)),
             relu1: layers::Relu::new(),
+            dropout1: layers::Dropout::new(if use_dropout { 0.25 } else { 0.0 }),
             affine2: layers::Affine::new(hidden_size, output_size, get_w_std(w_initializer, hidden_size)),
             
             last: layers::SoftmaxWithLoss::new(),
         }
     }
     
-    pub fn predict(&mut self, x: &Matrix<f32>) -> Matrix<f32> {
-        let layers: Vec<&mut Layer> = vec![&mut self.affine1, &mut self.relu1, &mut self.affine2];
+    pub fn predict(&mut self, x: &Matrix<f32>, train_flag: bool) -> Matrix<f32> {
+        self.dropout1.set_train_flag(train_flag);
+    
+        let layers: Vec<&mut Layer> = vec![&mut self.affine1, &mut self.relu1, &mut self.dropout1, &mut self.affine2];
     
         let mut prev_out = utils::copy_matrix(x);
         
@@ -45,7 +51,7 @@ impl MultiLayerNet {
     }
     
     pub fn loss(&mut self, x: &Matrix<f32>, t: &Matrix<f32>) -> f32 {
-        let y = self.predict(x);
+        let y = self.predict(x, true);
         
         self.last.set_label(t);
         
@@ -57,7 +63,7 @@ impl MultiLayerNet {
     }
     
     pub fn accuracy(&mut self, x: &Matrix<f32>, t: &Matrix<f32>) -> f32 {
-        let y = self.predict(x);
+        let y = self.predict(x, false);
         let y = utils::argmax(&y);
         let t = utils::argmax(t);
         
@@ -79,7 +85,7 @@ impl MultiLayerNet {
     
         // Backward
         {
-            let layers: Vec<&mut Layer> = vec![&mut self.affine1, &mut self.relu1, &mut self.affine2];
+            let layers: Vec<&mut Layer> = vec![&mut self.affine1, &mut self.relu1, &mut self.dropout1, &mut self.affine2];
 
             let mut dout = matrix![1.0];
             dout = self.last.backward(&dout);
